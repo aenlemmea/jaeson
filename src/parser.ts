@@ -1,4 +1,4 @@
-import { P, match } from "ts-pattern";
+import { match } from "ts-pattern";
 import { ASTNode, Token } from "./types";
 
 export const parser = (tokens: Token[]): ASTNode => {
@@ -57,15 +57,33 @@ export const parser = (tokens: Token[]): ASTNode => {
                 token = next();
                 const value = parseValue();
                 current.value[key] = value;
+            } else {
+                throw new Error(`Expected String key in object. Token type: ${token.type}`);
+                // Main edge case. To do, have failsafety.
             }
+            token = next();
+            if (token.type === "Comma") token = next();
         }
         return current;
     }
 
 
     function parseArray() : ASTNode {
-        throw new Error("Function not implemented.");
+        const current: ASTNode = { type: "Array", value: [] };
+        let token = next();
+    
+        while (token.type !== "BracketClose") {
+            const value = parseValue();
+            current.value.push(value);
+    
+            token = next();
+            if (token.type === "Comma") token = next();
+        }
+    
+        return current;
     }
+        
+        
 
     const AST = parseValue();
     return AST;

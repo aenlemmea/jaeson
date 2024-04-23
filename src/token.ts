@@ -4,7 +4,6 @@ import {P, match} from "ts-pattern";
 export const tokenizer = (input: string): Token[] => {
     const tokens: Token[] = [];
     let ptr = 0;
-    let currentString = '';
     for (let char of input) {
         ptr++;
         match(char)
@@ -15,6 +14,7 @@ export const tokenizer = (input: string): Token[] => {
             .with(":", () => tokens.push({type: "Colon", value: char}))
             .with(",", () => tokens.push({type: "Comma", value: char}))
             .with('"', () => {
+
                 let value = "";
                 char = input[ptr++];
                 while (char !== '"') {
@@ -24,6 +24,13 @@ export const tokenizer = (input: string): Token[] => {
                 tokens.push({type: "String", value})
                 ptr++;
             })
+            /*
+            Big Problem below. Suppose we have a key "id". 
+            Then it successfully grabs id and puts it in value above <- This 
+            happens for the current character being i.
+            Then the next current character (lol) is d and it matches the below regex. So ultimately things collide. 
+            TODO: Fix this. Urgent.
+            */
             .with(P.string.regex(/[\d\w]/), () => {
                 let value = "";
                 while(/[\d\w]/.test(char)) {
@@ -44,7 +51,7 @@ export const tokenizer = (input: string): Token[] => {
                     throw new Error("Unrecognized Value: " + value);
                 })
             })
-            .with(P.string.regex(/\s/), () => {})
+            .with(P.string.regex(/\s/), () => {console.log("here")})
             .otherwise(() => {
                 throw new Error("Unexpected Character");
             })
