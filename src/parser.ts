@@ -14,7 +14,8 @@ export const parser = (tokens: Token[]): ASTNode => {
 
     function parseValue() : ASTNode {
         const token = tokens[counter];
-        let result: ASTNode = { type: "Null"}; ;
+        let result: ASTNode = { type: "Null"}; 
+        //TODO: Explore if .returnType<T>() is possible to avoid result assignments.
         match(token.type)
             .with("String", () => {
                 result = {type: "String", value: token.value};
