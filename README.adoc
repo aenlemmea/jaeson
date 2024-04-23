@@ -1,0 +1,16 @@
+=== JAESON
+
+A very simple json parser.
+
+Mostly built for learning and tinkering purposes. 
+Uses pattern matching from the https://github.com/gvergnaud/ts-pattern[ts-pattern]
+library. Thank you for such a cool library. 
+
+This project was done thanks to the challenge (Coding Challeneges) by John Crickett.
+
+-----
+
+To run:
+
+`npm run build && npm run start` after installing the dependencies `typescript` global, and `ts-pattern`. 
+

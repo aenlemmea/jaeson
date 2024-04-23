@@ -4,24 +4,42 @@ import {P, match} from "ts-pattern";
 export const tokenizer = (input: string): Token[] => {
     const tokens: Token[] = [];
     let ptr = 0;
-    for (let char of input) {
-        ptr++;
+    while(ptr < input.length) {
+        let char = input[ptr];
         match(char)
-            .with("{", () => tokens.push({type: "BraceOpen", value: char}))
-            .with('}', () => tokens.push({type: "BraceClose", value: char}))
-            .with("[", () => tokens.push({type: "BracketOpen", value: char}))
-            .with("]", () => tokens.push({type: "BracketClose", value: char}))
-            .with(":", () => tokens.push({type: "Colon", value: char}))
-            .with(",", () => tokens.push({type: "Comma", value: char}))
+            .with("{", () => {
+                tokens.push({type: "BraceOpen", value: char});
+                ptr++;
+            })
+            .with('}', () => {
+                tokens.push({type: "BraceClose", value: char});
+                ptr++;
+            })
+            .with("[", () => {
+                tokens.push({type: "BracketOpen", value: char});
+                ptr++;
+            })
+            .with("]", () => {
+                tokens.push({type: "BracketClose", value: char});
+                ptr++;
+            })
+            .with(":", () => {
+                tokens.push({type: "Colon", value: char});
+                ptr++;
+            })
+            .with(",", () => {
+                tokens.push({type: "Comma", value: char});
+                ptr++;
+            })
             .with('"', () => {
-
+                // TODO: Rewrite this to avoid messy ptr movement.
                 let value = "";
-                char = input[ptr++];
+                char = input[++ptr]; 
                 while (char !== '"') {
                     value += char;
-                    char = input[ptr++];
+                    char = input[++ptr];
                 }
-                tokens.push({type: "String", value})
+                tokens.push({type: "String", value});
                 ptr++;
             })
             /*
@@ -29,8 +47,8 @@ export const tokenizer = (input: string): Token[] => {
             Then it successfully grabs id and puts it in value above <- This 
             happens for the current character being i.
             Then the next current character (lol) is d and it matches the below regex. So ultimately things collide. 
-            TODO: Fix this. Urgent.
-            */
+            ~~TODO: Fix this. Urgent.~~ FIXED.
+            */ 
             .with(P.string.regex(/[\d\w]/), () => {
                 let value = "";
                 while(/[\d\w]/.test(char)) {
@@ -38,9 +56,9 @@ export const tokenizer = (input: string): Token[] => {
                     char = input[++ptr];
                 }
                 match(value)
-                .with(P.number, () => tokens.push({type: "Number", value}))
-                .with(P.nullish, () => tokens.push({type: "Null", value}))
-                .with(P.boolean, () => {
+                .with(P.string.regex(/\d/), () => tokens.push({type: "Number", value}))
+                .with(P.string.regex(/null|undefined/), () => tokens.push({type: "Null", value}))
+                .with(P.string.regex(/true|false/), () => {
                     if (value === "true") {
                         tokens.push({type: "True", value});
                     } else {
@@ -51,7 +69,9 @@ export const tokenizer = (input: string): Token[] => {
                     throw new Error("Unrecognized Value: " + value);
                 })
             })
-            .with(P.string.regex(/\s/), () => {console.log("here")})
+            .with(P.string.regex(/\s/), () => {
+                ptr++;
+            })
             .otherwise(() => {
                 throw new Error("Unexpected Character");
             })
