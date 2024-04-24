@@ -8,7 +8,6 @@ library. Thank you for such a cool library.
 
 This project was done thanks to the challenge (Coding Challeneges) by John Crickett.
 
------
 
 To run:
 

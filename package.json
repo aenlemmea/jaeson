@@ -11,6 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "docopt": "^0.6.2",
     "ts-pattern": "^5.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "tslib": "^2.6.2"
   }
 }
