@@ -4,12 +4,15 @@ A very simple json parser.
 
 Mostly built for learning and tinkering purposes. 
 Uses pattern matching from the https://github.com/gvergnaud/ts-pattern[ts-pattern]
-library. Thank you for such a cool library. 
+library. Thank you for such a cool library. Uses command line argument parsing from 
+https://github.com/stuartcarnie/docopt.coffee[docopt] library. It really put a https://www.npmjs.com/package/docopt#docopt--a-command-line-option-parser-that-will-make-you-smile[smile]
+on my face after using it.
 
 This project was done thanks to the challenge (Coding Challeneges) by John Crickett.
 
 
 To run:
 
-`npm run build && npm run start` after installing the dependencies `typescript` global, and `ts-pattern`. 
+`npm run build && npm run start` after doing `npm i`. After that you can call do `node build/src/main.js --help`
+to view the manual.
 
