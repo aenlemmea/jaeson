@@ -1,9 +1,15 @@
 import {Token} from "./types";
 import {P, match} from "ts-pattern";
 
+const tokenizeString = (input: string, ptr: number): [string, number] => {
+    const value = input.substring(ptr + 1, input.indexOf('"', ptr + 1));
+    return [value, ptr + value.length + 2];
+};
+
 export const tokenizer = (input: string): Token[] => {
     const tokens: Token[] = [];
     let ptr = 0;
+
     while(ptr < input.length) {
         let char = input[ptr];
         match(char)
@@ -32,23 +38,10 @@ export const tokenizer = (input: string): Token[] => {
                 ptr++;
             })
             .with('"', () => {
-                // TODO: Rewrite this to avoid messy ptr movement.
-                let value = "";
-                char = input[++ptr]; 
-                while (char !== '"') {
-                    value += char;
-                    char = input[++ptr];
-                }
-                tokens.push({type: "String", value});
-                ptr++;
+                const [value, newPtr] = tokenizeString(input, ptr);
+                tokens.push({ type: 'String', value });
+                ptr = newPtr;
             })
-            /*
-            Big Problem below. Suppose we have a key "id". 
-            Then it successfully grabs id and puts it in value above <- This 
-            happens for the current character being i.
-            Then the next current character (lol) is d and it matches the below regex. So ultimately things collide. 
-            ~~TODO: Fix this. Urgent.~~ FIXED.
-            */ 
             .with(P.string.regex(/[\d\w]/), () => {
                 let value = "";
                 while(/[\d\w]/.test(char)) {
@@ -56,18 +49,18 @@ export const tokenizer = (input: string): Token[] => {
                     char = input[++ptr];
                 }
                 match(value)
-                .with(P.string.regex(/\d/), () => tokens.push({type: "Number", value}))
-                .with(P.string.regex(/null|undefined/), () => tokens.push({type: "Null", value}))
-                .with(P.string.regex(/true|false/), () => {
-                    if (value === "true") {
-                        tokens.push({type: "True", value});
-                    } else {
-                        tokens.push({type: "False", value});
-                    }
-                })
-                .otherwise(() => {
-                    throw new Error("Unrecognized Value: " + value);
-                })
+                    .with(P.string.regex(/\d/), () => tokens.push({type: "Number", value}))
+                    .with(P.string.regex(/null|undefined/), () => tokens.push({type: "Null", value}))
+                    .with(P.string.regex(/true|false/), () => {
+                        if (value === "true") {
+                            tokens.push({type: "True", value});
+                        } else {
+                            tokens.push({type: "False", value});
+                        }
+                    })
+                    .otherwise(() => {
+                        throw new Error("Unrecognized Value: " + value);
+                    })
             })
             .with(P.string.regex(/\s/), () => {
                 ptr++;

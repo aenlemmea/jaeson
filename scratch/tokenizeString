@@ -1,0 +1,9 @@
+// ~(TODO: Rewrite this to avoid messy ptr movement.) => DONE
+// let value = "";
+// char = input[++ptr]; 
+// while (char !== '"') {
+//     value += char;
+//     char = input[++ptr];
+// }
+// tokens.push({type: "String", value});
+// ptr++;
